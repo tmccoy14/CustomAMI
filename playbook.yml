@@ -1,0 +1,6 @@
+- hosts: all
+  become: true
+  vars:
+    docker_package: 'docker-ce=5:18.09.0~3-0~ubuntu-bionic'
+  roles:
+    - role: 'ansible-role-docker'

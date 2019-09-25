@@ -1,11 +1,11 @@
 {
     "variables": {
         "instance_size": "t2.micro",
-        "ami_name": "ami-packer-test",
-        "base_ami": "ami-0b69ea66ff7391e80",
-        "ssh_username": "ec2-user",
-        "vpc_id": "",
-        "subnet_id": ""
+        "ami_name": "ubuntu-docker-18.04-falcon",
+        "base_ami": "ami-07d0cf3af28718ef8",
+        "ssh_username": "ubuntu",
+        "vpc_id": "vpc-04d1b1026ab411411",
+        "subnet_id": "subnet-028a4109a00be1019"
     },
     "builders": [
         {
@@ -20,8 +20,8 @@
             "vpc_id": "{{user `vpc_id`}}",
             "subnet_id": "{{user `subnet_id`}}",
             "tags": {
-                "Name": "App Name",
-                "BuiltBy": "Packer-Build-Example"
+                "Name": "Falcon Custom AMI",
+                "BuiltBy": "Skylab-Build"
             }
         }
     ],
@@ -30,10 +30,15 @@
         {
             "type": "shell",
             "inline": [
-                "sudo yum update -y",
-                "sudo yum install -y git",
-                "python --version",
-                "sudo yum install python3"
+                "sudo apt-get update -y",
+                "sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes --assume-yes python-pip",
+                "sudo apt-get autoremove -y",
+                "sudo apt-get clean",
+                "sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common",
+                "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
+                "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"",
+                "sudo apt-get -y install docker-ce",
+                "sudo docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher"
             ]
         }
     ]
